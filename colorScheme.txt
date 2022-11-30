@@ -1,0 +1,6 @@
+Purple: #4E4476
+Blue: #2B5876
+White
+Light Gray: #d3d3d3
+Black
+Accent: #2596be
