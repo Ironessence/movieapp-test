@@ -42,7 +42,7 @@ const Main = () => {
         },
       })}
     >
-      <Tab.Screen name={ScreenRoutes.Home} component={Home} />
+      <Tab.Screen name={ScreenRoutes.Home} component={Home} options={{ headerShown: false }} />
       <Tab.Screen name={ScreenRoutes.Favorites} component={Favorites} />
       <Tab.Screen name={ScreenRoutes.Search} component={Search} />
       <Tab.Screen name={ScreenRoutes.Account} component={Account} />
