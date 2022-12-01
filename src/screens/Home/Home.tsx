@@ -1,12 +1,20 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MAIcon from '../../components/MAIcon';
-import { sharedStyles } from '../../utils/sharedStyles';
+
 import { themeStyles } from '../../utils/themeStyles';
+//@ts-ignore
+import { API_KEY } from '@env';
 
 const Home = () => {
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log(API_KEY);
+    }, []),
+  );
+
   return (
     <SafeAreaView style={styles.root}>
       <LinearGradient
@@ -14,8 +22,6 @@ const Home = () => {
         style={styles.container}
         start={{ x: 0.1, y: 0.9 }}
       />
-      <Text style={sharedStyles.subtitle}>This is a test title</Text>
-      <MAIcon name="airplane" color={themeStyles.black} size={50} />
     </SafeAreaView>
   );
 };
