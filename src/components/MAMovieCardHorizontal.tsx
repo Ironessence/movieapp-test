@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+
 import React, { useMemo } from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+
 import { sharedStyles } from '../utils/sharedStyles';
 import { themeStyles } from '../utils/themeStyles';
 import { basePosterUrl } from '../utils/utils';
@@ -10,12 +12,13 @@ interface Props {
   poster: string;
   title?: string;
   rating?: number;
+  onPressMovie?: () => void;
 }
 
-const MAMovieCardHorizontal = ({ poster, title, rating }: Props) => {
+const MAMovieCardHorizontal = ({ poster, title, rating, onPressMovie }: Props) => {
   const posterUrl = useMemo(() => basePosterUrl + poster, [poster]);
   return (
-    <TouchableHighlight style={styles.container}>
+    <TouchableHighlight style={styles.container} onPress={onPressMovie}>
       <View>
         <Image source={{ uri: posterUrl }} style={styles.poster} />
 

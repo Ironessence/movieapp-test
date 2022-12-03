@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject } from 'react';
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { themeStyles } from '../../utils/themeStyles';
 import { sharedStyles } from '../../utils/sharedStyles';
@@ -10,10 +10,13 @@ import axios from 'axios';
 import { API_KEY } from '@env';
 import { PopularMovie } from '../../utils/Models';
 import Carousel from 'react-native-snap-carousel';
-import { ScrollView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import PopularSection from './components/PopularSection';
 import GenresSection from './components/GenresSection';
 import UpcomingSection from './components/UpcomingSection';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import SelectedMovieDetails from './components/SelectedMovieSheet';
+import SelectedMovieSheet from './components/SelectedMovieSheet';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
@@ -21,9 +24,13 @@ const Home = () => {
   const [upcomingMovies, setUpcomingMovies] = useState<PopularMovie[]>();
   const [currentPopularSlide, setCurrentPopularSlide] = useState<number>();
   const [currentUpcomingSlide, setCurrentUpcomingSlide] = useState<number>();
+  const [selectedMovie, setSelectedMovie] = useState<PopularMovie | null>(null);
 
   const popularCarouselRef = useRef<Carousel<PopularMovie>>(null);
   const upcomingCarouselRef = useRef<Carousel<PopularMovie>>(null);
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const snapPoints = useMemo(() => ['30%', '55%'], []);
 
   //API
 
@@ -41,12 +48,26 @@ const Home = () => {
       .catch(() => {});
   }, []);
 
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
   useEffect(() => {
     getPopularMovies();
     getUpcomingMovies();
   }, [getPopularMovies, getUpcomingMovies]);
 
   //CAROUSEL
+
+  useEffect(() => {
+    if (selectedMovie) {
+      bottomSheetRef.current?.present();
+    }
+  }, [selectedMovie]);
+
+  const onPressMovieCard = useCallback((movie: PopularMovie) => {
+    setSelectedMovie(movie);
+  }, []);
 
   const handleChangePopularCarouselItem = useCallback((index: number) => {
     setCurrentPopularSlide(index);
@@ -91,23 +112,39 @@ const Home = () => {
             </LinearGradient>
           </View>
 
-          {popularMovies && (
+          {popularMovies ? (
             <PopularSection
               popularMovies={popularMovies}
               popularCarouselRef={popularCarouselRef}
               handleChangePopularCarouselItem={handleChangePopularCarouselItem}
               currentPopularSlide={currentPopularSlide}
+              onPressMovie={onPressMovieCard}
             />
+          ) : (
+            <ActivityIndicator color={themeStyles.blue} />
           )}
           <GenresSection />
-          {upcomingMovies && (
+          {upcomingMovies ? (
             <UpcomingSection
               upcomingMovies={upcomingMovies}
               upcomingCarouselRef={upcomingCarouselRef}
               handleChangeUpcomingCarouselItem={handleChangeUpcomingCarouselItem}
               currentUpcomingSlide={currentUpcomingSlide}
             />
+          ) : (
+            <ActivityIndicator color={themeStyles.blue} />
           )}
+
+          {/* BOTTOM SHEET */}
+
+          <BottomSheetModal
+            ref={bottomSheetRef}
+            index={1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChanges}
+          >
+            {selectedMovie && <SelectedMovieSheet selectedMovie={selectedMovie} />}
+          </BottomSheetModal>
         </LinearGradient>
       </ScrollView>
     </SafeAreaView>
@@ -167,6 +204,13 @@ const styles = StyleSheet.create({
   },
   extraMarginBottom: {
     marginBottom: 40,
+  },
+  bottomSheet: {
+    height: 500,
+    backgroundColor: 'white',
+  },
+  bottomSheetBackground: {
+    backgroundColor: 'white',
   },
 });
 

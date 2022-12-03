@@ -11,6 +11,7 @@ interface Props {
   popularCarouselRef: any;
   handleChangePopularCarouselItem(index: number): void;
   currentPopularSlide?: number;
+  onPressMovie: (movie: PopularMovie) => void;
 }
 
 const PopularSection = ({
@@ -18,6 +19,7 @@ const PopularSection = ({
   popularCarouselRef,
   handleChangePopularCarouselItem,
   currentPopularSlide,
+  onPressMovie,
 }: Props) => {
   return (
     <>
@@ -35,6 +37,7 @@ const PopularSection = ({
                 poster={item.backdrop_path ? item.backdrop_path : item.poster_path}
                 title={item.title}
                 rating={item.vote_average}
+                onPressMovie={() => onPressMovie(item)}
               />
             )}
             windowSize={Dimensions.get('screen').width}
