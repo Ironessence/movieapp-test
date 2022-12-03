@@ -40,6 +40,7 @@ const Main = () => {
           paddingVertical: Platform.OS === 'ios' ? 10 : 2,
           backgroundColor: themeStyles.blue,
         },
+        tabBarHideOnKeyboard: true,
       })}
     >
       <Tab.Screen name={ScreenRoutes.Home} component={Home} options={{ headerShown: false }} />

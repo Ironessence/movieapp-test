@@ -8,8 +8,8 @@ import { basePosterUrl } from '../utils/utils';
 
 interface Props {
   poster: string;
-  title: string;
-  rating: number;
+  title?: string;
+  rating?: number;
 }
 
 const MAMovieCardHorizontal = ({ poster, title, rating }: Props) => {
@@ -19,13 +19,17 @@ const MAMovieCardHorizontal = ({ poster, title, rating }: Props) => {
       <View>
         <Image source={{ uri: posterUrl }} style={styles.poster} />
 
-        <Text style={title.length < 15 ? styles.title : [styles.title, styles.longTitle]}>
-          {title}
-        </Text>
-        <View style={styles.ratingContainer}>
-          <Ionicons name={'star'} size={14} color={themeStyles.black} />
-          <Text style={styles.rating}>{rating}</Text>
-        </View>
+        {title && (
+          <Text style={title.length < 15 ? styles.title : [styles.title, styles.longTitle]}>
+            {title}
+          </Text>
+        )}
+        {rating && (
+          <View style={styles.ratingContainer}>
+            <Ionicons name={'star'} size={14} color={themeStyles.black} />
+            <Text style={styles.rating}>{rating}</Text>
+          </View>
+        )}
       </View>
     </TouchableHighlight>
   );

@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Dimensions, LayoutChangeEvent, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { themeStyles } from '../../utils/themeStyles';
 import { sharedStyles } from '../../utils/sharedStyles';
@@ -9,35 +9,42 @@ import axios from 'axios';
 //@ts-ignore
 import { API_KEY } from '@env';
 import { PopularMovie } from '../../utils/Models';
-import MAMovieCardHorizontal from '../../components/MAMovieCardHorizontal';
 import Carousel from 'react-native-snap-carousel';
+import { ScrollView } from 'react-native-gesture-handler';
+import PopularSection from './components/PopularSection';
+import GenresSection from './components/GenresSection';
+import UpcomingSection from './components/UpcomingSection';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
   const [popularMovies, setPopularMovies] = useState<PopularMovie[]>();
+  const [upcomingMovies, setUpcomingMovies] = useState<PopularMovie[]>();
   const [currentPopularSlide, setCurrentPopularSlide] = useState<number>();
-  const [carouselWidth, setCarouselWidth] = useState<number>();
-  const carouselRef = useRef<Carousel<PopularMovie>>(null);
+  const [currentUpcomingSlide, setCurrentUpcomingSlide] = useState<number>();
+
+  const popularCarouselRef = useRef<Carousel<PopularMovie>>(null);
+  const upcomingCarouselRef = useRef<Carousel<PopularMovie>>(null);
 
   //API
-
-  useEffect(() => {
-    console.log(popularMovies);
-  }, [popularMovies]);
 
   const getPopularMovies = useCallback(() => {
     axios
       .get(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
-      .then((res) => setPopularMovies(res.data.results))
-      .catch((e) => {
-        //TODO: Add Toast here!
-        console.log(e);
-      });
+      .then((res) => setPopularMovies(res.data.results.slice(1, 20)))
+      .catch(() => {});
+  }, []);
+
+  const getUpcomingMovies = useCallback(() => {
+    axios
+      .get(`https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`)
+      .then((res) => setUpcomingMovies(res.data.results.slice(1, 10)))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     getPopularMovies();
-  }, [getPopularMovies]);
+    getUpcomingMovies();
+  }, [getPopularMovies, getUpcomingMovies]);
 
   //CAROUSEL
 
@@ -45,69 +52,64 @@ const Home = () => {
     setCurrentPopularSlide(index);
   }, []);
 
-  const handleLayoutCarouselWrapper = useCallback((event: LayoutChangeEvent) => {
-    setCarouselWidth(event.nativeEvent.layout.width);
+  const handleChangeUpcomingCarouselItem = useCallback((index: number) => {
+    setCurrentUpcomingSlide(index);
   }, []);
 
   return (
     <SafeAreaView style={styles.root}>
-      <LinearGradient
-        colors={[themeStyles.blue, themeStyles.purple]}
-        style={styles.container}
-        start={{ x: 0.1, y: 0.9 }}
-      >
-        <View style={styles.headerContainer}>
-          <Text style={styles.userGreeting}>Hello, Testuser!</Text>
-          <Ionicons name={'notifications'} size={24} color={themeStyles.white} />
-        </View>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <LinearGradient
+          colors={[themeStyles.blue, themeStyles.purple]}
+          style={styles.container}
+          start={{ x: 0.1, y: 0.9 }}
+        >
+          <View style={styles.headerContainer}>
+            <Text style={styles.userGreeting}>Hello, Testuser!</Text>
+            <Ionicons name={'notifications'} size={24} color={themeStyles.white} />
+          </View>
 
-        <View style={styles.searchContainer}>
-          <LinearGradient
-            colors={[themeStyles.darkBlue, themeStyles.lightBlue]}
-            style={styles.inputGradient}
-            start={{ x: 0.45, y: 0.1 }}
-          >
-            <Ionicons
-              name={'search'}
-              size={24}
-              color={themeStyles.gray}
-              style={styles.searchInputIcon}
-            />
-            <TextInput
-              style={styles.search}
-              value={searchInput}
-              placeholder={'Search'}
-              onChange={(input: string) => setSearchInput(input)}
-              placeholderTextColor={themeStyles.gray}
-            />
-          </LinearGradient>
-        </View>
+          <View style={styles.searchContainer}>
+            <LinearGradient
+              colors={[themeStyles.darkBlue, themeStyles.lightBlue]}
+              style={styles.inputGradient}
+              start={{ x: 0.45, y: 0.1 }}
+            >
+              <Ionicons
+                name={'search'}
+                size={24}
+                color={themeStyles.gray}
+                style={styles.searchInputIcon}
+              />
+              <TextInput
+                style={styles.search}
+                value={searchInput}
+                placeholder={'Search'}
+                onChange={(input: string) => setSearchInput(input)}
+                placeholderTextColor={themeStyles.gray}
+              />
+            </LinearGradient>
+          </View>
 
-        <View style={styles.popularContainer}>
-          <Text style={styles.popularTitle}>Most Popular</Text>
-        </View>
-
-        <View style={styles.popularMoviesContainer}>
-          {popularMovies?.length && (
-            <Carousel
-              ref={carouselRef}
-              data={popularMovies}
-              renderItem={({ item }: { item: PopularMovie }) => (
-                <MAMovieCardHorizontal
-                  poster={item.backdrop_path ? item.backdrop_path : item.poster_path}
-                  title={item.title}
-                  rating={item.vote_average}
-                />
-              )}
-              windowSize={Dimensions.get('screen').width}
-              sliderWidth={Dimensions.get('screen').width}
-              itemWidth={Dimensions.get('screen').width * 0.7}
-              enableMomentum={true}
-              onSnapToItem={handleChangePopularCarouselItem}
+          {popularMovies && (
+            <PopularSection
+              popularMovies={popularMovies}
+              popularCarouselRef={popularCarouselRef}
+              handleChangePopularCarouselItem={handleChangePopularCarouselItem}
+              currentPopularSlide={currentPopularSlide}
             />
           )}
-        </View>
-      </LinearGradient>
+          <GenresSection />
+          {upcomingMovies && (
+            <UpcomingSection
+              upcomingMovies={upcomingMovies}
+              upcomingCarouselRef={upcomingCarouselRef}
+              handleChangeUpcomingCarouselItem={handleChangeUpcomingCarouselItem}
+              currentUpcomingSlide={currentUpcomingSlide}
+            />
+          )}
+        </LinearGradient>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -115,6 +117,9 @@ const Home = () => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+  },
+  scrollView: {
+    paddingBottom: 40,
   },
   container: {
     flex: 1,
@@ -134,7 +139,8 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: 48,
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
+    opacity: 1,
   },
   search: {
     width: '100%',
@@ -152,22 +158,16 @@ const styles = StyleSheet.create({
     zIndex: 2,
     borderRadius: 10,
     flexDirection: 'row',
+    opacity: 0.5,
   },
   searchInputIcon: {
     position: 'absolute',
     top: 9,
     marginLeft: 5,
   },
-  popularContainer: {
-    paddingHorizontal: 48,
+  extraMarginBottom: {
+    marginBottom: 40,
   },
-  popularTitle: {
-    ...sharedStyles.title,
-    fontSize: 24,
-    letterSpacing: 0.3,
-    marginBottom: 15,
-  },
-  popularMoviesContainer: {},
 });
 
 export default Home;
