@@ -1,5 +1,6 @@
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { PopularMovie } from '../../../utils/Models';
 
 interface Props {
@@ -8,9 +9,9 @@ interface Props {
 
 const SelectedMovieSheet = ({ selectedMovie }: Props) => {
   return (
-    <View>
+    <BottomSheetScrollView>
       <Text style={{ fontSize: 50, textAlign: 'center' }}>{selectedMovie.original_title}</Text>
-    </View>
+    </BottomSheetScrollView>
   );
 };
 

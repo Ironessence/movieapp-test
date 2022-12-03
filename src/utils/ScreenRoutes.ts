@@ -8,4 +8,5 @@ export enum ScreenRoutes {
   Settings = 'Settings',
   Popular = 'Popular',
   Upcoming = 'Upcoming',
+  MovieDetails = 'MovieDetails',
 }

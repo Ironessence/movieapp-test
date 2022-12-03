@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { themeStyles } from '../../utils/themeStyles';
@@ -10,13 +10,15 @@ import axios from 'axios';
 import { API_KEY } from '@env';
 import { PopularMovie } from '../../utils/Models';
 import Carousel from 'react-native-snap-carousel';
-import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import PopularSection from './components/PopularSection';
 import GenresSection from './components/GenresSection';
 import UpcomingSection from './components/UpcomingSection';
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import SelectedMovieDetails from './components/SelectedMovieSheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import SelectedMovieSheet from './components/SelectedMovieSheet';
+import CustomSheetBg from './components/CustomSheetBg';
+import { useNavigation } from '@react-navigation/native';
+import ScreenRoutes from '../../utils/ScreenRoutes';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
@@ -29,8 +31,9 @@ const Home = () => {
   const popularCarouselRef = useRef<Carousel<PopularMovie>>(null);
   const upcomingCarouselRef = useRef<Carousel<PopularMovie>>(null);
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const navigation = useNavigation();
 
-  const snapPoints = useMemo(() => ['30%', '55%'], []);
+  const snapPoints = useMemo(() => ['55%', '95%'], []);
 
   //API
 
@@ -65,9 +68,15 @@ const Home = () => {
     }
   }, [selectedMovie]);
 
-  const onPressMovieCard = useCallback((movie: PopularMovie) => {
-    setSelectedMovie(movie);
-  }, []);
+  const onPressMovieCard = useCallback(
+    (movie: PopularMovie) => {
+      setSelectedMovie(movie);
+      if (selectedMovie) {
+        navigation.navigate(ScreenRoutes.Search);
+      }
+    },
+    [navigation, selectedMovie],
+  );
 
   const handleChangePopularCarouselItem = useCallback((index: number) => {
     setCurrentPopularSlide(index);
@@ -76,6 +85,16 @@ const Home = () => {
   const handleChangeUpcomingCarouselItem = useCallback((index: number) => {
     setCurrentUpcomingSlide(index);
   }, []);
+
+  // const customBottomSheetBg = () => {
+  //   return (
+  //     <LinearGradient
+  //       colors={[themeStyles.blue, themeStyles.purple]}
+  //       style={styles.customBottomSheetBg}
+  //       start={{ x: 0.1, y: 0.9 }}
+  //     />
+  //   );
+  // };
 
   return (
     <SafeAreaView style={styles.root}>
@@ -142,6 +161,8 @@ const Home = () => {
             index={1}
             snapPoints={snapPoints}
             onChange={handleSheetChanges}
+            backgroundComponent={CustomSheetBg}
+            backgroundStyle={styles.bottomSheet}
           >
             {selectedMovie && <SelectedMovieSheet selectedMovie={selectedMovie} />}
           </BottomSheetModal>
@@ -206,11 +227,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   bottomSheet: {
-    height: 500,
-    backgroundColor: 'white',
-  },
-  bottomSheetBackground: {
-    backgroundColor: 'white',
+    borderTopRightRadius: 45,
+    borderTopLeftRadius: 45,
   },
 });
 
