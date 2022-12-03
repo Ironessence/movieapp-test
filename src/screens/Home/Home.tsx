@@ -1,26 +1,31 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Dimensions, LayoutChangeEvent, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { themeStyles } from '../../utils/themeStyles';
-//@ts-ignore
-
 import { sharedStyles } from '../../utils/sharedStyles';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 //@ts-ignore
 import { API_KEY } from '@env';
 import { PopularMovie } from '../../utils/Models';
-import { FlatList } from 'react-native-gesture-handler';
 import MAMovieCardHorizontal from '../../components/MAMovieCardHorizontal';
+import Carousel from 'react-native-snap-carousel';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
   const [popularMovies, setPopularMovies] = useState<PopularMovie[]>();
+  const [currentPopularSlide, setCurrentPopularSlide] = useState<number>();
+  const [carouselWidth, setCarouselWidth] = useState<number>();
+  const carouselRef = useRef<Carousel<PopularMovie>>(null);
 
   //API
 
   useEffect(() => {
+    console.log(popularMovies);
+  }, [popularMovies]);
+
+  const getPopularMovies = useCallback(() => {
     axios
       .get(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
       .then((res) => setPopularMovies(res.data.results))
@@ -28,6 +33,20 @@ const Home = () => {
         //TODO: Add Toast here!
         console.log(e);
       });
+  }, []);
+
+  useEffect(() => {
+    getPopularMovies();
+  }, [getPopularMovies]);
+
+  //CAROUSEL
+
+  const handleChangePopularCarouselItem = useCallback((index: number) => {
+    setCurrentPopularSlide(index);
+  }, []);
+
+  const handleLayoutCarouselWrapper = useCallback((event: LayoutChangeEvent) => {
+    setCarouselWidth(event.nativeEvent.layout.width);
   }, []);
 
   return (
@@ -44,7 +63,7 @@ const Home = () => {
 
         <View style={styles.searchContainer}>
           <LinearGradient
-            colors={[themeStyles.blue, themeStyles.purple]}
+            colors={[themeStyles.darkBlue, themeStyles.lightBlue]}
             style={styles.inputGradient}
             start={{ x: 0.45, y: 0.1 }}
           >
@@ -69,17 +88,22 @@ const Home = () => {
         </View>
 
         <View style={styles.popularMoviesContainer}>
-          {/* TODO: Fix display, replace Flatlist with Carousel */}
-          {popularMovies && (
-            <FlatList
+          {popularMovies?.length && (
+            <Carousel
+              ref={carouselRef}
               data={popularMovies}
-              renderItem={({ item }) => (
+              renderItem={({ item }: { item: PopularMovie }) => (
                 <MAMovieCardHorizontal
-                  poster={item.poster_path}
+                  poster={item.backdrop_path ? item.backdrop_path : item.poster_path}
                   title={item.title}
                   rating={item.vote_average}
                 />
               )}
+              windowSize={Dimensions.get('screen').width}
+              sliderWidth={Dimensions.get('screen').width}
+              itemWidth={Dimensions.get('screen').width * 0.7}
+              enableMomentum={true}
+              onSnapToItem={handleChangePopularCarouselItem}
             />
           )}
         </View>
@@ -141,6 +165,7 @@ const styles = StyleSheet.create({
     ...sharedStyles.title,
     fontSize: 24,
     letterSpacing: 0.3,
+    marginBottom: 15,
   },
   popularMoviesContainer: {},
 });

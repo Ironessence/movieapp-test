@@ -5,4 +5,7 @@ export const themeStyles = {
   black: 'black',
   accent: '#2596be',
   gray: '#d3d3d3',
+  darkBlue: '#425A85',
+  lightBlue: '#566F94',
+  darkYellow: '#e3cd07',
 };
