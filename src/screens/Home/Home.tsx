@@ -14,11 +14,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import PopularSection from './components/PopularSection';
 import GenresSection from './components/GenresSection';
 import UpcomingSection from './components/UpcomingSection';
+
+import { ScreenRoutes } from '../../utils/ScreenRoutes';
+import { useNavigation } from '@react-navigation/native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import SelectedMovieSheet from './components/SelectedMovieSheet';
 import CustomSheetBg from './components/CustomSheetBg';
-import { useNavigation } from '@react-navigation/native';
-import ScreenRoutes from '../../utils/ScreenRoutes';
+import CustomBackdropBg from './components/CustomBackdropBg';
+import { useMovies } from '../../context/movieContext';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
@@ -26,14 +29,10 @@ const Home = () => {
   const [upcomingMovies, setUpcomingMovies] = useState<PopularMovie[]>();
   const [currentPopularSlide, setCurrentPopularSlide] = useState<number>();
   const [currentUpcomingSlide, setCurrentUpcomingSlide] = useState<number>();
-  const [selectedMovie, setSelectedMovie] = useState<PopularMovie | null>(null);
+  const { selectedMovie, setSelectedMovie, bottomSheetRef } = useMovies();
 
   const popularCarouselRef = useRef<Carousel<PopularMovie>>(null);
   const upcomingCarouselRef = useRef<Carousel<PopularMovie>>(null);
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const navigation = useNavigation();
-
-  const snapPoints = useMemo(() => ['55%', '95%'], []);
 
   //API
 
@@ -51,31 +50,16 @@ const Home = () => {
       .catch(() => {});
   }, []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-
   useEffect(() => {
     getPopularMovies();
     getUpcomingMovies();
   }, [getPopularMovies, getUpcomingMovies]);
 
-  //CAROUSEL
-
-  useEffect(() => {
-    if (selectedMovie) {
-      bottomSheetRef.current?.present();
-    }
-  }, [selectedMovie]);
-
   const onPressMovieCard = useCallback(
     (movie: PopularMovie) => {
       setSelectedMovie(movie);
-      if (selectedMovie) {
-        navigation.navigate(ScreenRoutes.Search);
-      }
     },
-    [navigation, selectedMovie],
+    [setSelectedMovie],
   );
 
   const handleChangePopularCarouselItem = useCallback((index: number) => {
@@ -86,15 +70,17 @@ const Home = () => {
     setCurrentUpcomingSlide(index);
   }, []);
 
-  // const customBottomSheetBg = () => {
-  //   return (
-  //     <LinearGradient
-  //       colors={[themeStyles.blue, themeStyles.purple]}
-  //       style={styles.customBottomSheetBg}
-  //       start={{ x: 0.1, y: 0.9 }}
-  //     />
-  //   );
-  // };
+  const snapPoints = useMemo(() => ['55%', '95%'], []);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+  useEffect(() => {
+    if (selectedMovie) {
+      bottomSheetRef.current?.present();
+    }
+  }, [bottomSheetRef, selectedMovie]);
 
   return (
     <SafeAreaView style={styles.root}>
@@ -153,16 +139,14 @@ const Home = () => {
           ) : (
             <ActivityIndicator color={themeStyles.blue} />
           )}
-
-          {/* BOTTOM SHEET */}
-
           <BottomSheetModal
             ref={bottomSheetRef}
-            index={1}
+            index={0}
             snapPoints={snapPoints}
             onChange={handleSheetChanges}
             backgroundComponent={CustomSheetBg}
             backgroundStyle={styles.bottomSheet}
+            backdropComponent={CustomBackdropBg}
           >
             {selectedMovie && <SelectedMovieSheet selectedMovie={selectedMovie} />}
           </BottomSheetModal>

@@ -21,6 +21,7 @@ export const LinkingConfig: LinkingOptions = {
         screens: {
           [ScreenRoutes.Popular]: ScreenRoutes.Popular,
           [ScreenRoutes.Upcoming]: ScreenRoutes.Upcoming,
+          [ScreenRoutes.MovieDetails]: ScreenRoutes.MovieDetails,
         },
       },
     },

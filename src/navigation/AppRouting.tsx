@@ -3,16 +3,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import RootStackNavigator from './RootStackNavigator';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { MovieProvider } from '../context/movieContext';
 
 const AppRouting = () => {
   return (
-    <NavigationContainer>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <RootStackNavigator />
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
-    </NavigationContainer>
+    <MovieProvider>
+      <NavigationContainer>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <RootStackNavigator />
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </NavigationContainer>
+    </MovieProvider>
   );
 };
 
