@@ -1,7 +1,6 @@
 import { PathConfig } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import MovieDetails from '../screens/Home/screens/MovieDetails';
 import Popular from '../screens/Popular/Popular';
 import Upcoming from '../screens/Upcoming/Upcoming';
 import { ScreenRoutes } from '../utils/ScreenRoutes';

@@ -1,19 +1,28 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useMovies } from '../../../context/movieContext';
 import { themeStyles } from '../../../utils/themeStyles';
 import { basePosterUrl } from '../../../utils/utils';
 
 const CustomBackdropBg = () => {
-  const { selectedMovie, bottomSheetRef } = useMovies();
+  const { selectedMovie, setSelectedMovie, bottomSheetRef } = useMovies();
+
+  const handleBottomSheetClose = useCallback(() => {
+    bottomSheetRef?.current?.close();
+    setSelectedMovie(null);
+  }, [bottomSheetRef, setSelectedMovie]);
 
   return (
     <View style={styles.containerStyle}>
-      <TouchableOpacity style={styles.backIcon} onPress={() => bottomSheetRef?.current?.close()}>
-        <Ionicons name={'chevron-back-circle-outline'} size={35} color={themeStyles.white} />
+      <TouchableOpacity style={styles.backIcon} onPress={handleBottomSheetClose}>
+        <Ionicons name={'arrow-back-outline'} size={35} color={themeStyles.white} />
       </TouchableOpacity>
-      <Image source={{ uri: basePosterUrl + selectedMovie.poster_path }} style={styles.image} />
+      {selectedMovie ? (
+        <Image source={{ uri: basePosterUrl + selectedMovie.poster_path }} style={styles.image} />
+      ) : (
+        <ActivityIndicator />
+      )}
     </View>
   );
 };

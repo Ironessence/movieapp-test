@@ -146,7 +146,7 @@ const Home = () => {
             backgroundStyle={styles.bottomSheet}
             backdropComponent={CustomBackdropBg}
           >
-            {selectedMovie && <SelectedMovieSheet selectedMovie={selectedMovie} />}
+            {selectedMovie && <SelectedMovieSheet />}
           </BottomSheetModal>
         </LinearGradient>
       </ScrollView>

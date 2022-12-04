@@ -11,15 +11,15 @@ import React, {
 import { Movie } from '../utils/Models';
 
 interface MovieContextData {
-  selectedMovie?: Movie;
-  setSelectedMovie: (movie: Movie) => void;
+  selectedMovie?: Movie | null;
+  setSelectedMovie: (movie: Movie | null) => void;
   bottomSheetRef: RefObject<BottomSheetModalMethods>;
 }
 
 const MovieContext = createContext<MovieContextData>({} as MovieContextData);
 
 const MovieProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [selectedMovie, setSelectedMovie] = useState<Movie>();
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   return (
