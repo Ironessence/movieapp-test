@@ -3,15 +3,15 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import MAMovieCardHorizontal from '../../../components/MAMovieCardHorizontal';
 import MASliderDots from '../../../components/MASliderDots';
-import { PopularMovie } from '../../../utils/Models';
+import { Movie } from '../../../utils/Models';
 import { sharedStyles } from '../../../utils/sharedStyles';
 
 interface Props {
-  popularMovies?: PopularMovie[];
+  popularMovies?: Movie[];
   popularCarouselRef: any;
   handleChangePopularCarouselItem(index: number): void;
   currentPopularSlide?: number;
-  onPressMovie: (movie: PopularMovie) => void;
+  onPressMovie: (movie: Movie) => void;
 }
 
 const PopularSection = ({
@@ -32,7 +32,7 @@ const PopularSection = ({
           <Carousel
             ref={popularCarouselRef}
             data={popularMovies}
-            renderItem={({ item }: { item: PopularMovie }) => (
+            renderItem={({ item }: { item: Movie }) => (
               <MAMovieCardHorizontal
                 poster={item.backdrop_path ? item.backdrop_path : item.poster_path}
                 title={item.title}

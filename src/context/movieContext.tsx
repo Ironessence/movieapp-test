@@ -1,11 +1,25 @@
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import React, { createContext, useContext, useRef, useState } from 'react';
-import { PopularMovie } from '../utils/Models';
+import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import React, {
+  createContext,
+  PropsWithChildren,
+  RefObject,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
+import { Movie } from '../utils/Models';
 
-const MovieContext = createContext({});
+interface MovieContextData {
+  selectedMovie?: Movie;
+  setSelectedMovie: (movie: Movie) => void;
+  bottomSheetRef: RefObject<BottomSheetModalMethods>;
+}
 
-const MovieProvider: React.FC = ({ children }) => {
-  const [selectedMovie, setSelectedMovie] = useState<PopularMovie>();
+const MovieContext = createContext<MovieContextData>({} as MovieContextData);
+
+const MovieProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  const [selectedMovie, setSelectedMovie] = useState<Movie>();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   return (

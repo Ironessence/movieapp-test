@@ -1,4 +1,3 @@
-import { PopularMovie } from '../utils/Models';
 import { ScreenRoutes } from '../utils/ScreenRoutes';
 
 export type NavigationParamList = {
@@ -18,5 +17,4 @@ export type NavigationParamList = {
   //HOME
   [ScreenRoutes.Popular]: undefined;
   [ScreenRoutes.Upcoming]: undefined;
-  [ScreenRoutes.MovieDetails]: { selectedMovie: PopularMovie };
 };

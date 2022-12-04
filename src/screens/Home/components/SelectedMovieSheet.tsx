@@ -1,10 +1,10 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import React from 'react';
 import { Text } from 'react-native';
-import { PopularMovie } from '../../../utils/Models';
+import { Movie } from '../../../utils/Models';
 
 interface Props {
-  selectedMovie: PopularMovie;
+  selectedMovie: Movie;
 }
 
 const SelectedMovieSheet = ({ selectedMovie }: Props) => {

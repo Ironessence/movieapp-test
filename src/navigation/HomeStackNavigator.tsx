@@ -12,7 +12,6 @@ const HomeStackNavigator = () => {
   <HomeStack.Navigator>
     <HomeStack.Screen name={ScreenRoutes.Popular} component={Popular} />
     <HomeStack.Screen name={ScreenRoutes.Upcoming} component={Upcoming} />
-    <HomeStack.Screen name={ScreenRoutes.MovieDetails} component={MovieDetails} />
   </HomeStack.Navigator>;
 };
 
@@ -21,7 +20,6 @@ export const HomeStackPathConfig: PathConfig = {
   screens: {
     [ScreenRoutes.Popular]: ScreenRoutes.Popular,
     [ScreenRoutes.Upcoming]: [ScreenRoutes.Upcoming],
-    [ScreenRoutes.MovieDetails]: [ScreenRoutes.MovieDetails],
   },
 };
 

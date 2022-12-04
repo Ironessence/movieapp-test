@@ -8,15 +8,13 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 //@ts-ignore
 import { API_KEY } from '@env';
-import { PopularMovie } from '../../utils/Models';
+import { Movie } from '../../utils/Models';
 import Carousel from 'react-native-snap-carousel';
 import { ScrollView } from 'react-native-gesture-handler';
 import PopularSection from './components/PopularSection';
 import GenresSection from './components/GenresSection';
 import UpcomingSection from './components/UpcomingSection';
 
-import { ScreenRoutes } from '../../utils/ScreenRoutes';
-import { useNavigation } from '@react-navigation/native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import SelectedMovieSheet from './components/SelectedMovieSheet';
 import CustomSheetBg from './components/CustomSheetBg';
@@ -25,14 +23,14 @@ import { useMovies } from '../../context/movieContext';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
-  const [popularMovies, setPopularMovies] = useState<PopularMovie[]>();
-  const [upcomingMovies, setUpcomingMovies] = useState<PopularMovie[]>();
+  const [popularMovies, setPopularMovies] = useState<Movie[]>();
+  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>();
   const [currentPopularSlide, setCurrentPopularSlide] = useState<number>();
   const [currentUpcomingSlide, setCurrentUpcomingSlide] = useState<number>();
   const { selectedMovie, setSelectedMovie, bottomSheetRef } = useMovies();
 
-  const popularCarouselRef = useRef<Carousel<PopularMovie>>(null);
-  const upcomingCarouselRef = useRef<Carousel<PopularMovie>>(null);
+  const popularCarouselRef = useRef<Carousel<Movie>>(null);
+  const upcomingCarouselRef = useRef<Carousel<Movie>>(null);
 
   //API
 
@@ -56,7 +54,7 @@ const Home = () => {
   }, [getPopularMovies, getUpcomingMovies]);
 
   const onPressMovieCard = useCallback(
-    (movie: PopularMovie) => {
+    (movie: Movie) => {
       setSelectedMovie(movie);
     },
     [setSelectedMovie],
@@ -111,7 +109,7 @@ const Home = () => {
                 style={styles.search}
                 value={searchInput}
                 placeholder={'Search'}
-                onChange={(input: string) => setSearchInput(input)}
+                onChangeText={(input: string) => setSearchInput(input)}
                 placeholderTextColor={themeStyles.gray}
               />
             </LinearGradient>

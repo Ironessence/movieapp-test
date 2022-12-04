@@ -3,11 +3,11 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import MAMovieCardHorizontal from '../../../components/MAMovieCardHorizontal';
 import MASliderDots from '../../../components/MASliderDots';
-import { PopularMovie } from '../../../utils/Models';
+import { Movie } from '../../../utils/Models';
 import { sharedStyles } from '../../../utils/sharedStyles';
 
 interface Props {
-  upcomingMovies?: PopularMovie[];
+  upcomingMovies?: Movie[];
   upcomingCarouselRef: any;
   handleChangeUpcomingCarouselItem(index: number): void;
   currentUpcomingSlide?: number;
@@ -30,7 +30,7 @@ const UpcomingSection = ({
           <Carousel
             ref={upcomingCarouselRef}
             data={upcomingMovies}
-            renderItem={({ item }: { item: PopularMovie }) => (
+            renderItem={({ item }: { item: Movie }) => (
               <MAMovieCardHorizontal poster={item.poster_path} />
             )}
             windowSize={Dimensions.get('screen').width}
