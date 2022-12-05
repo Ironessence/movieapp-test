@@ -12,16 +12,23 @@ interface IconProps {
 
 interface Props {
   color?: string;
-  shadow?: boolean;
   value: string | number;
   icon?: IconProps;
   textColor?: string;
 }
 
-const MAChip = ({ color, shadow = true, value, icon, textColor = themeStyles.white }: Props) => {
+const MAChip = ({ color, value, icon, textColor = themeStyles.white }: Props) => {
   return (
     <LinearGradient
-      style={[styles.container, { backgroundColor: color, shadowRadius: shadow ? 15 : 0 }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: color,
+          elevation: 6,
+          shadowColor: themeStyles.black,
+          shadowRadius: 6,
+        },
+      ]}
       colors={
         color ? [themeStyles.darkYellow, 'yellow'] : [themeStyles.darkBlue, themeStyles.lightBlue]
       }
