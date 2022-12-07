@@ -11,6 +11,7 @@ interface Props {
   upcomingCarouselRef: any;
   handleChangeUpcomingCarouselItem(index: number): void;
   currentUpcomingSlide?: number;
+  onPressMovie: (movie: Movie) => void;
 }
 
 const UpcomingSection = ({
@@ -18,9 +19,10 @@ const UpcomingSection = ({
   upcomingCarouselRef,
   handleChangeUpcomingCarouselItem,
   currentUpcomingSlide,
+  onPressMovie,
 }: Props) => {
   return (
-    <View style={styles.extraMarginBottom}>
+    <View style={styles.root}>
       <View style={styles.popularContainer}>
         <Text style={styles.popularTitle}>Upcoming</Text>
       </View>
@@ -31,7 +33,10 @@ const UpcomingSection = ({
             ref={upcomingCarouselRef}
             data={upcomingMovies}
             renderItem={({ item }: { item: Movie }) => (
-              <MAMovieCardHorizontal poster={item.poster_path} />
+              <MAMovieCardHorizontal
+                poster={item.poster_path}
+                onPressMovie={() => onPressMovie(item)}
+              />
             )}
             windowSize={Dimensions.get('screen').width}
             sliderWidth={Dimensions.get('screen').width}
@@ -52,6 +57,9 @@ const UpcomingSection = ({
 };
 
 const styles = StyleSheet.create({
+  root: {
+    paddingBottom: 40,
+  },
   popularContainer: {
     paddingHorizontal: 48,
   },
@@ -64,9 +72,6 @@ const styles = StyleSheet.create({
   popularMoviesContainer: {},
   carouselDotsWrapper: {
     marginTop: 10,
-  },
-  extraMarginBottom: {
-    marginBottom: 40,
   },
 });
 

@@ -1,4 +1,4 @@
-export enum ScreenRoutes {
+enum ScreenRoutes {
   Main = 'Main',
   Home = 'Home',
   HomeStack = 'HomeStack',
@@ -8,4 +8,7 @@ export enum ScreenRoutes {
   Settings = 'Settings',
   Popular = 'Popular',
   Upcoming = 'Upcoming',
+  MovieDetails = 'MovieDetails',
 }
+
+export { ScreenRoutes };

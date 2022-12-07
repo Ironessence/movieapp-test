@@ -1,7 +1,15 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  StatusBar,
+} from 'react-native';
+
 import { themeStyles } from '../../utils/themeStyles';
 import { sharedStyles } from '../../utils/sharedStyles';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +28,10 @@ import SelectedMovieSheet from './components/SelectedMovieSheet';
 import CustomSheetBg from './components/CustomSheetBg';
 import CustomBackdropBg from './components/CustomBackdropBg';
 import { useMovies } from '../../context/movieContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MAButton from '../../components/MAButton';
+import { useNavigation } from '@react-navigation/native';
+import { ScreenRoutes } from '../../utils/ScreenRoutes';
 
 const Home = () => {
   const [searchInput, setSearchInput] = useState<string>('');
@@ -31,13 +43,17 @@ const Home = () => {
 
   const popularCarouselRef = useRef<Carousel<Movie>>(null);
   const upcomingCarouselRef = useRef<Carousel<Movie>>(null);
+  const insets = useSafeAreaInsets();
+  const androidTopStatusBar = StatusBar.currentHeight;
+  const iosTopStatusBar = insets.top;
+  const navigation = useNavigation();
 
   //API
 
   const getPopularMovies = useCallback(() => {
     axios
       .get(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
-      .then((res) => setPopularMovies(res.data.results.slice(1, 20)))
+      .then((res) => setPopularMovies(res.data.results.slice(1, 10)))
       .catch(() => {});
   }, []);
 
@@ -70,9 +86,10 @@ const Home = () => {
 
   const snapPoints = useMemo(() => ['55%', '95%'], []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+  const onPressMovieDetails = useCallback(() => {
+    bottomSheetRef.current?.close();
+    navigation.navigate(ScreenRoutes.Account);
+  }, [bottomSheetRef, navigation]);
 
   useEffect(() => {
     if (selectedMovie) {
@@ -81,14 +98,19 @@ const Home = () => {
   }, [bottomSheetRef, selectedMovie]);
 
   return (
-    <SafeAreaView style={styles.root}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+    <View style={styles.root}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <LinearGradient
           colors={[themeStyles.blue, themeStyles.purple]}
-          style={styles.container}
+          style={styles.linearGradient}
           start={{ x: 0.1, y: 0.9 }}
         >
-          <View style={styles.headerContainer}>
+          <View
+            style={[
+              styles.headerContainer,
+              { marginTop: Platform.OS === 'ios' ? iosTopStatusBar : androidTopStatusBar },
+            ]}
+          >
             <Text style={styles.userGreeting}>Hello, Testuser!</Text>
             <Ionicons name={'notifications'} size={24} color={themeStyles.white} />
           </View>
@@ -127,48 +149,49 @@ const Home = () => {
             <ActivityIndicator color={themeStyles.blue} />
           )}
           <GenresSection />
+
           {upcomingMovies ? (
             <UpcomingSection
               upcomingMovies={upcomingMovies}
               upcomingCarouselRef={upcomingCarouselRef}
               handleChangeUpcomingCarouselItem={handleChangeUpcomingCarouselItem}
               currentUpcomingSlide={currentUpcomingSlide}
+              onPressMovie={onPressMovieCard}
             />
           ) : (
             <ActivityIndicator color={themeStyles.blue} />
           )}
+
           <BottomSheetModal
             ref={bottomSheetRef}
             index={0}
             snapPoints={snapPoints}
-            onChange={handleSheetChanges}
             backgroundComponent={CustomSheetBg}
             backgroundStyle={styles.bottomSheet}
             backdropComponent={CustomBackdropBg}
           >
-            {selectedMovie && <SelectedMovieSheet />}
+            {selectedMovie && <SelectedMovieSheet onPressMovieDetails={onPressMovieDetails} />}
           </BottomSheetModal>
         </LinearGradient>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    flexGrow: 1,
   },
-  scrollView: {
-    paddingBottom: 40,
-  },
-  container: {
+  linearGradient: {
     flex: 1,
+    flexGrow: 1,
   },
   headerContainer: {
     paddingHorizontal: 48,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 32,
+    paddingTop: 32,
     marginBottom: 24,
   },
   userGreeting: {
@@ -204,9 +227,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 9,
     marginLeft: 5,
-  },
-  extraMarginBottom: {
-    marginBottom: 40,
   },
   bottomSheet: {
     borderTopRightRadius: 45,

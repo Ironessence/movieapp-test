@@ -1,3 +1,4 @@
+import React, { useCallback, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import axios from 'axios';
@@ -8,13 +9,21 @@ import { useMovies } from '../../../context/movieContext';
 import { themeStyles } from '../../../utils/themeStyles';
 //@ts-ignore
 import { API_KEY } from '@env';
-import React, { useEffect, useCallback, useState } from 'react';
+
 import { MovieCast, MovieDetails } from '../../../utils/Models';
 import MACastMemberCard from '../../../components/MACastMemberCard';
 
 import { FlatList } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/core';
+import MAButton from '../../../components/MAButton';
+import { ScreenRoutes } from '../../../utils/ScreenRoutes';
 
-const SelectedMovieSheet = () => {
+interface Props {
+  onPressMovieDetails(): void;
+}
+
+const SelectedMovieSheet = ({ onPressMovieDetails }: Props) => {
   const { selectedMovie } = useMovies();
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [movieCast, setMovieCast] = useState<MovieCast[] | null>(null);
@@ -25,7 +34,7 @@ const SelectedMovieSheet = () => {
         `https://api.themoviedb.org/3/movie/${selectedMovie?.id}?api_key=${API_KEY}&language=en-US`,
       )
       .then((res) => setMovieDetails(res.data))
-      .catch((e) => console.log(e));
+      .catch((e) => console.log('fetchMovieDetails'));
   }, [selectedMovie?.id]);
 
   const fetchMovieCast = useCallback(() => {
@@ -34,13 +43,15 @@ const SelectedMovieSheet = () => {
         `https://api.themoviedb.org/3/movie/${selectedMovie?.id}/credits?api_key=${API_KEY}&language=en-US`,
       )
       .then((res) => setMovieCast(res.data.cast))
-      .catch((e) => console.log(e));
+      .catch((e) => console.log('fetchMovieCast'));
   }, [selectedMovie?.id]);
 
-  useEffect(() => {
-    fetchMovieDetails();
-    fetchMovieCast();
-  }, [fetchMovieCast, fetchMovieDetails]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchMovieDetails();
+      fetchMovieCast();
+    }, [fetchMovieCast, fetchMovieDetails]),
+  );
 
   const renderCastCard = useCallback(
     ({ item }: { item: MovieCast }) => <MACastMemberCard actor={item} />,
@@ -104,6 +115,13 @@ const SelectedMovieSheet = () => {
             renderItem={renderCastCard}
           />
         </View>
+
+        {/* BUTTON FULL MOVIE DETAILS */}
+        <MAButton
+          onPress={onPressMovieDetails}
+          title={'See complete details'}
+          style={styles.button}
+        />
       </View>
     </BottomSheetScrollView>
   );
@@ -119,7 +137,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   wrapper: {
-    paddingHorizontal: 52,
+    paddingHorizontal: 25,
   },
   chipsAndIconsContainer: {
     flexDirection: 'row',
@@ -147,6 +165,9 @@ const styles = StyleSheet.create({
   },
   castContainer: {
     marginTop: 20,
+  },
+  button: {
+    marginTop: 12,
   },
 });
 
