@@ -1,13 +1,23 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { NavigationParamList } from '../../../navigation/NavigationParamList';
-import { ScreenRoutes } from '../../../utils/ScreenRoutes';
+import { ScreenRoutes } from '../../../constants/ScreenRoutes';
 
-const MovieDetails = ({ navigation, route }) => {
+const MovieDetails = ({
+  navigation,
+  route,
+}: StackScreenProps<NavigationParamList, ScreenRoutes.MovieDetails>) => {
+  const movie = route?.params?.movieDetails;
+
+  useEffect(() => {
+    console.log(movie);
+  }, [movie]);
+
   return (
     <View>
-      <Text>MovieDetails</Text>
+      <Text>THE MOVIE IS:</Text>
+      <Text>{movie.title}</Text>
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScreenRoutes } from '../utils/ScreenRoutes';
+import { ScreenRoutes } from '../constants/ScreenRoutes';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';

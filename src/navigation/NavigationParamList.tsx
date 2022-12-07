@@ -1,11 +1,11 @@
 import { MovieDetails } from '../utils/Models';
-import { ScreenRoutes } from '../utils/ScreenRoutes';
+import { ScreenRoutes } from '../constants/ScreenRoutes';
 
 export type NavigationParamList = {
   //MAIN
   [ScreenRoutes.Main]: undefined;
   [ScreenRoutes.Home]: undefined;
-  [ScreenRoutes.MovieDetails]: MovieDetails;
+  [ScreenRoutes.MovieDetails]: { movieDetails: MovieDetails };
 
   //FAVORITES
   [ScreenRoutes.Favorites]: undefined;

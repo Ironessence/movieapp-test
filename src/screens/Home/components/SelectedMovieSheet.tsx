@@ -15,18 +15,15 @@ import MACastMemberCard from '../../../components/MACastMemberCard';
 
 import { FlatList } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/core';
+import { NavigationProp, useNavigation } from '@react-navigation/core';
 import MAButton from '../../../components/MAButton';
-import { ScreenRoutes } from '../../../utils/ScreenRoutes';
+import { ScreenRoutes } from '../../../constants/ScreenRoutes';
 
-interface Props {
-  onPressMovieDetails(): void;
-}
-
-const SelectedMovieSheet = ({ onPressMovieDetails }: Props) => {
+const SelectedMovieSheet = () => {
   const { selectedMovie } = useMovies();
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [movieCast, setMovieCast] = useState<MovieCast[] | null>(null);
+  const navigation = useNavigation<NavigationProp<any>>();
 
   const fetchMovieDetails = useCallback(() => {
     axios
@@ -52,6 +49,12 @@ const SelectedMovieSheet = ({ onPressMovieDetails }: Props) => {
       fetchMovieCast();
     }, [fetchMovieCast, fetchMovieDetails]),
   );
+
+  const onPressMovieDetails = useCallback(() => {
+    if (movieDetails) {
+      navigation.navigate(ScreenRoutes.MovieDetails, { movieDetails });
+    }
+  }, [movieDetails, navigation]);
 
   const renderCastCard = useCallback(
     ({ item }: { item: MovieCast }) => <MACastMemberCard actor={item} />,

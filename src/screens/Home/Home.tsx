@@ -9,7 +9,6 @@ import {
   View,
   StatusBar,
 } from 'react-native';
-
 import { themeStyles } from '../../utils/themeStyles';
 import { sharedStyles } from '../../utils/sharedStyles';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,31 +21,29 @@ import { ScrollView } from 'react-native-gesture-handler';
 import PopularSection from './components/PopularSection';
 import GenresSection from './components/GenresSection';
 import UpcomingSection from './components/UpcomingSection';
-
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import SelectedMovieSheet from './components/SelectedMovieSheet';
 import CustomSheetBg from './components/CustomSheetBg';
 import CustomBackdropBg from './components/CustomBackdropBg';
 import { useMovies } from '../../context/movieContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MAButton from '../../components/MAButton';
-import { useNavigation } from '@react-navigation/native';
-import { ScreenRoutes } from '../../utils/ScreenRoutes';
+import { ScreenRoutes } from '../../constants/ScreenRoutes';
+import { StackScreenProps } from '@react-navigation/stack';
+import { NavigationParamList } from '../../navigation/NavigationParamList';
+import { useFocusEffect } from '@react-navigation/core';
 
-const Home = () => {
+const Home = ({}: StackScreenProps<NavigationParamList, ScreenRoutes.Home>) => {
   const [searchInput, setSearchInput] = useState<string>('');
   const [popularMovies, setPopularMovies] = useState<Movie[]>();
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>();
   const [currentPopularSlide, setCurrentPopularSlide] = useState<number>();
   const [currentUpcomingSlide, setCurrentUpcomingSlide] = useState<number>();
   const { selectedMovie, setSelectedMovie, bottomSheetRef } = useMovies();
-
   const popularCarouselRef = useRef<Carousel<Movie>>(null);
   const upcomingCarouselRef = useRef<Carousel<Movie>>(null);
   const insets = useSafeAreaInsets();
   const androidTopStatusBar = StatusBar.currentHeight;
   const iosTopStatusBar = insets.top;
-  const navigation = useNavigation();
 
   //API
 
@@ -86,10 +83,11 @@ const Home = () => {
 
   const snapPoints = useMemo(() => ['55%', '95%'], []);
 
-  const onPressMovieDetails = useCallback(() => {
-    bottomSheetRef.current?.close();
-    navigation.navigate(ScreenRoutes.Account);
-  }, [bottomSheetRef, navigation]);
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => bottomSheetRef.current?.close();
+    }, [bottomSheetRef]),
+  );
 
   useEffect(() => {
     if (selectedMovie) {
@@ -170,7 +168,7 @@ const Home = () => {
             backgroundStyle={styles.bottomSheet}
             backdropComponent={CustomBackdropBg}
           >
-            {selectedMovie && <SelectedMovieSheet onPressMovieDetails={onPressMovieDetails} />}
+            {selectedMovie && <SelectedMovieSheet />}
           </BottomSheetModal>
         </LinearGradient>
       </ScrollView>

@@ -1,5 +1,5 @@
 import { LinkingOptions } from '@react-navigation/native';
-import { ScreenRoutes } from '../utils/ScreenRoutes';
+import { ScreenRoutes } from '../constants/ScreenRoutes';
 import { HomeStackPathConfig } from './HomeStackNavigator';
 
 export const LinkingConfig: LinkingOptions = {

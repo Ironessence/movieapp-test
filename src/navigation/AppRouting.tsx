@@ -4,7 +4,6 @@ import RootStackNavigator from './RootStackNavigator';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MovieProvider } from '../context/movieContext';
-import { LinkingConfig } from './LinkingConfig';
 
 const AppRouting = () => {
   const navigationRef = useRef<NavigationContainerRef>(null);

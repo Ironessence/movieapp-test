@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import Popular from '../screens/Popular/Popular';
 import Upcoming from '../screens/Upcoming/Upcoming';
-import { ScreenRoutes } from '../utils/ScreenRoutes';
+import { ScreenRoutes } from '../constants/ScreenRoutes';
 
 const HomeStackNavigator = () => {
   const HomeStack = createStackNavigator();
